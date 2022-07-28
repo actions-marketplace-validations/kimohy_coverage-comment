@@ -18,6 +18,4 @@ runs:
     - name: Extract test coverage
       shell: bash
       run: |
-        pwd
-        ls -al ${{ inputs.xml-test-report-path }}
         $GITHUB_ACTION_PATH/main.py "${{ inputs.xml-test-report-path }}" ${{ inputs.github-token }} ${{ github.api_url }} ${{ github.repository }} ${{ github.ref }} ${{ github.event.pull_request.url }}
