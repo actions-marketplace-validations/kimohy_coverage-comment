@@ -1,6 +1,6 @@
 name: "Test coverage comment"
 description: "Leave a test coverage comment on pull request."
-author: "pooi (Taewoo You)"
+author: "pooi (Taewoo You) / modified by kimohy (Moohyun Kim)"
 
 inputs:
   github-token:
@@ -13,7 +13,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: pip3 install -r $GITHUB_ACTION_PATH/requirements.txt
+    - run: pip install -r $GITHUB_ACTION_PATH/requirements.txt
       shell: bash
     - name: Extract test coverage
       shell: bash
