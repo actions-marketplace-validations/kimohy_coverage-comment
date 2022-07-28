@@ -59,7 +59,7 @@ def create_review_comment(comment):
 def calc_coverage(covered, missed):
     if float(missed) + float(covered) == 0.0:
         return "none"
-    return "{%s}%% " % round(float(covered) / (float(missed) + float(covered)) * 100, 2) + \
+    return "%s%% " % round(float(covered) / (float(missed) + float(covered)) * 100, 2) + \
            "(%d/%d)" % (int(covered), int(covered) + int(missed))
 
 
