@@ -1,4 +1,4 @@
-name: "Test coverage comment"
+name: "Test coverage comment for python2.x"
 description: "Leave a test coverage comment on pull request."
 author: "pooi (Taewoo You) / modified by kimohy (Moohyun Kim)"
 
