@@ -1,5 +1,7 @@
 # `coverage-comment` - Github Composite Action
 
+Forked from: https://github.com/pooi/coverage-comment
+
 This action leave a test coverage comment on pull request.
 
 ![example](example.png)
