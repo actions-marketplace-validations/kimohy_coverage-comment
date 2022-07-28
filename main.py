@@ -12,7 +12,7 @@ target_type = ["INSTRUCTION", "LINE", "METHOD", "CLASS"]
 
 def find_pull_request():
     response = requests.get(
-        f"{github_api_url}/repos/{repository}/pulls",
+        "%s/repos/%s/pulls" % (github_api_url, repository),
         headers=api_headers
     )
 
@@ -23,26 +23,26 @@ def find_pull_request():
                 return pull_request["url"]
         return None
     else:
-        print(f"FIND-PULL-REQUEST-ERROR, code={response.status_code}, body={response.json()}")
+        print("FIND-PULL-REQUEST-ERROR, code={%s}, body={%s}" % (response.status_code, response.json()))
         return None
 
 
 def get_pull_request_files():
     response = requests.get(
-        f"{pull_request_url}/files?per_page=100",
+        "%s/files?per_page=100" % pull_request_url,
         headers=api_headers
     )
 
     if response.ok:
         return response.json()
     else:
-        print(f"GET-PULL-REQUEST-FILES-ERROR, code={response.status_code}, body={response.json()}")
+        print("GET-PULL-REQUEST-FILES-ERROR, code={%s}, body={%s}" % (response.status_code, response.json()))
         return []
 
 
 def create_review_comment(comment):
     response = requests.post(
-        f"{pull_request_url}/comments".replace("/pulls/", "/issues/"),
+        ("%s/comments" % pull_request_url).replace("/pulls/", "/issues/"),
         headers=api_headers,
         json={
             'body': comment
@@ -52,23 +52,23 @@ def create_review_comment(comment):
     if response.ok:
         return response.json()
     else:
-        print(f"CREATE-REVIEW-COMMENT-ERROR, code={response.status_code}, body={response.json()}")
+        print("CREATE-REVIEW-COMMENT-ERROR,code={%s}, body={%s}" % (response.status_code, response.json()))
         return None
 
 
 def calc_coverage(covered, missed):
     if float(missed) + float(covered) == 0.0:
         return "none"
-    return f"{round(float(covered) / (float(missed) + float(covered)) * 100, 2)}% " \
-           f"({int(covered)}/{int(covered) + int(missed)})"
+    return "{%s}%% " % round(float(covered) / (float(missed) + float(covered)) * 100, 2) + \
+           "(%d/%d)" % (int(covered), int(covered) + int(missed))
 
 
 def generate_changed_files_table(changed_files_coverage):
     is_multiple = len(changed_files_coverage) > 1
-    text = f"## Changed File{'s' if is_multiple else ''} Coverage:\n"
+    text = "## Changed File{%s} Coverage:\n" % 's' if is_multiple else ''
     headers = ['File name'] + changed_file_target_type
-    text += f"|{'|'.join(headers)}|\n"
-    text += f"|{'|'.join(['---' for _ in headers])}|\n"
+    text += "|%s|\n" % '|'.join(headers)
+    text += "|%s|\n" % '|'.join(['---' for _ in headers])
 
     coverage_summary = {coverage_type: {"covered": 0.0, "missed": 0.0} for coverage_type in changed_file_target_type}
     for file_name, data in changed_files_coverage.items():
@@ -78,24 +78,24 @@ def generate_changed_files_table(changed_files_coverage):
             coverage_summary[coverage_type]["missed"] += data[coverage_type]["missed"]
 
         coverages = [data[coverage_type]["coverage"] for coverage_type in changed_file_target_type]
-        text += f"|{'|'.join([file_name] + coverages)}|\n"
+        text += "|%s|\n" % '|'.join([file_name] + coverages)
 
     if len(changed_files_coverage.items()) > 1:
         coverages = [
-            f"**{calc_coverage(coverage_summary[coverage_type]['covered'], coverage_summary[coverage_type]['missed'])}**"
+            "**%s**" % calc_coverage(coverage_summary[coverage_type]['covered'], coverage_summary[coverage_type]['missed'])
             for coverage_type in changed_file_target_type]
-        text += f"|{'|'.join(['**Summary**'] + coverages)}|\n"
+        text += "|%s|\n" % '|'.join(['**Summary**'] + coverages)
         print(coverage_summary)
     return text
 
 
 def generate_table(name, coverage_map):
-    text = f"# {name}\n"
-    text += f"## Total Test Coverage:\n"
+    text = "# %s\n" % name
+    text += "## Total Test Coverage:\n"
     text += "|Type|Coverage|\n"
     text += "|---|---|\n"
     for coverage_type in coverage_map:
-        text += f"|{coverage_type}|{coverage_map[coverage_type]}|\n"
+        text += "|%s|%s|\n" % (coverage_type, coverage_map[coverage_type])
     return text
 
 
@@ -112,9 +112,9 @@ def build_changed_files_coverage(root):
     for changed_file in changed_files:
         file_name = None
         for language, extension in [("java", ".java"), ("kotlin", ".kt"), ("groovy", ".groovy")]:
-            if changed_file.endswith(extension) and f"main/{language}" in changed_file:
+            if changed_file.endswith(extension) and "main/%s" % language in changed_file:
                 file_name = changed_file[
-                            re.search(f"main/{language}", changed_file).end() + 1:]
+                            re.search("main/%s" % language, changed_file).end() + 1:]
 
         if file_name is not None and file_name not in converted_changed_files:
             converted_changed_files.add(file_name)
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
         api_headers = {
             'Accept': 'application/vnd.github.v3+json',
-            'Authorization': f"token {github_token}"
+            'Authorization': "token %s" % github_token
         }
 
         github_api_url = sys.argv[3]
