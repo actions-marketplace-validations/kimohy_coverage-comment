@@ -2,6 +2,8 @@
 
 Forked from: https://github.com/pooi/coverage-comment
 
+**This action supports Python 2.x**
+
 This action leave a test coverage comment on pull request.
 
 ![example](example.png)
@@ -24,7 +26,7 @@ jobs:
 
       ... // You must generate a test coverage report here. (e.g. ./gradlew check
 
-      - uses: pooi/coverage-comment@1.0.0
+      - uses: kimohy/coverage-comment@1.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           xml-test-report-path: ${SOURCE_PATH}/build/reports/kover/report.xml
